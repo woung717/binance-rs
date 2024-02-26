@@ -21,6 +21,7 @@ pub struct ExchangeInformation {
 pub struct Symbol {
     pub symbol: String,
     pub status: String,
+    pub contract_type: String,
     pub maint_margin_percent: String,
     pub required_margin_percent: String,
     pub base_asset: String,

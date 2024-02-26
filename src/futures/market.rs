@@ -24,6 +24,7 @@ use crate::util::{build_request, build_signed_request};
 use crate::futures::model::{
     AggTrades, BookTickers, KlineSummaries, KlineSummary, LiquidationOrders, MarkPrices,
     OpenInterest, OpenInterestHist, OrderBook, PriceStats, SymbolPrice, Tickers, Trades,
+    ExchangeInformation
 };
 use crate::client::Client;
 use crate::errors::Result;
@@ -45,6 +46,10 @@ pub struct FuturesMarket {
 }
 
 impl FuturesMarket {
+    pub fn get_exchange_info(&self) -> Result<ExchangeInformation> {
+        self.client.get(API::Futures(Futures::ExchangeInfo), None)
+    }
+
     // Order book (Default 100; max 1000)
     pub fn get_depth<S>(&self, symbol: S) -> Result<OrderBook>
     where
@@ -242,7 +247,8 @@ impl FuturesMarket {
             .get(API::Futures(Futures::BookTicker), Some(request))
     }
 
-    pub fn get_mark_prices(&self) -> Result<MarkPrices> {
+    pub fn get_mark_prices(&self) -> Result<MarkPrices> 
+    {
         self.client.get(API::Futures(Futures::PremiumIndex), None)
     }
 
