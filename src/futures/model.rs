@@ -477,6 +477,13 @@ pub struct AccountBalance {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
+pub struct ChangeMarginTypeResponse {
+    pub code: u8,
+    pub message: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct ChangeLeverageResponse {
     pub leverage: u8,
     #[serde(with = "string_or_float")]

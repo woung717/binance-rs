@@ -9,8 +9,7 @@ use crate::account::OrderSide;
 use crate::futures::model::{Order, TradeHistory};
 
 use super::model::{
-    ChangeLeverageResponse, Transaction, CanceledOrder, PositionRisk, AccountBalance,
-    AccountInformation,
+    AccountBalance, AccountInformation, CanceledOrder, ChangeLeverageResponse, ChangeMarginTypeResponse, PositionRisk, Transaction
 };
 
 #[derive(Clone)]
@@ -82,6 +81,12 @@ impl Display for OrderType {
 pub enum WorkingType {
     MarkPrice,
     ContractPrice,
+}
+
+#[derive(PartialEq, Eq)]
+pub enum MarginType {
+    ISOLATED,
+    CROSSED,
 }
 
 impl Display for WorkingType {
@@ -578,6 +583,22 @@ impl FuturesAccount {
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
             .get_signed(API::Futures(Futures::Balance), Some(request))
+    }
+
+    pub fn change_initial_margin_type<S, M>(
+        &self, symbol: S, margin_type: M,
+    ) -> Result<ChangeMarginTypeResponse>
+    where
+        S: Into<String>,
+        M: Into<MarginType>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("marginType".into(), if margin_type.into() == MarginType::ISOLATED { "ISOLATED" } else { "CROSSED" }.into());
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client
+            .post_signed(API::Futures(Futures::ChangeMarginType), request)
     }
 
     pub fn change_initial_leverage<S>(
